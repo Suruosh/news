@@ -1,0 +1,9 @@
+{
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/articles/:id", "destination": "/api/articles/[id]" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
