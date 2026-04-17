@@ -1,5 +1,9 @@
 import supabase from "../lib/supabase.js";
 
+// REVIEW: This serverless function duplicates the logic in server/routes/articles.js.
+// Having two copies of the same route logic (Express + Vercel serverless) creates a
+// maintenance burden — changes must be made in both places. Consider sharing the
+// handler logic via a common module.
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {

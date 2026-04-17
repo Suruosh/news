@@ -1,3 +1,7 @@
+// REVIEW: Uses `var` throughout this file. The rest of the codebase (App.jsx, hooks,
+// components) uses modern `const`/`let`. Be consistent — use `const` for values that
+// don't change and `let` where reassignment is needed.
+// Modern JavaScript does not use var anymore.
 var API_BASE = "/api";
 
 export async function fetchArticles() {
@@ -10,6 +14,9 @@ export async function fetchArticles() {
   return response.json();
 }
 
+// REVIEW: `articleData.featured || false` will coerce a valid `false` value
+// to `false` which happens to be correct, but `featured: articleData.featured ?? false`
+// is semantically clearer. Same issue in updateArticle below.
 export async function createArticle(articleData) {
   var response = await fetch(API_BASE + "/articles", {
     method: "POST",
@@ -25,7 +32,9 @@ export async function createArticle(articleData) {
   });
 
   if (!response.ok) {
-    var err = await response.json().catch(function () { return {}; });
+    var err = await response.json().catch(function () {
+      return {};
+    });
     throw new Error(err.error || "Failed to create article");
   }
 
@@ -47,7 +56,9 @@ export async function updateArticle(id, articleData) {
   });
 
   if (!response.ok) {
-    var err = await response.json().catch(function () { return {}; });
+    var err = await response.json().catch(function () {
+      return {};
+    });
     throw new Error(err.error || "Failed to update article");
   }
 
@@ -60,7 +71,9 @@ export async function deleteArticle(id) {
   });
 
   if (!response.ok) {
-    var err = await response.json().catch(function () { return {}; });
+    var err = await response.json().catch(function () {
+      return {};
+    });
     throw new Error(err.error || "Failed to delete article");
   }
 

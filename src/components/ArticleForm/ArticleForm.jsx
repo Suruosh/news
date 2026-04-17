@@ -1,7 +1,20 @@
 import { useState, useEffect } from "react";
 import "./ArticleForm.css";
 
-const CATEGORIES = ["Travel", "Culture", "Art", "Technology", "History", "Opinion", "Politics", "Business", "Science", "Sports"];
+// REVIEW: This CATEGORIES array is duplicated in ArticleList.jsx (with "All" prepended)
+// and ArticleWizard.jsx. Extract it into a shared constants file to keep them in sync.
+const CATEGORIES = [
+  "Travel",
+  "Culture",
+  "Art",
+  "Technology",
+  "History",
+  "Opinion",
+  "Politics",
+  "Business",
+  "Science",
+  "Sports",
+];
 
 const EMPTY_FORM = {
   title: "",
@@ -125,7 +138,10 @@ function ArticleForm({ article, onSubmit, onCancel }) {
               <select
                 id="category"
                 name="category"
-                className={"form-input form-select" + (errors.category ? " input-error" : "")}
+                className={
+                  "form-input form-select" +
+                  (errors.category ? " input-error" : "")
+                }
                 value={formData.category}
                 onChange={handleChange}
               >
@@ -136,7 +152,9 @@ function ArticleForm({ article, onSubmit, onCancel }) {
                   </option>
                 ))}
               </select>
-              {errors.category && <span className="error-text">{errors.category}</span>}
+              {errors.category && (
+                <span className="error-text">{errors.category}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -152,7 +170,9 @@ function ArticleForm({ article, onSubmit, onCancel }) {
                 onChange={handleChange}
                 placeholder="Author name"
               />
-              {errors.author && <span className="error-text">{errors.author}</span>}
+              {errors.author && (
+                <span className="error-text">{errors.author}</span>
+              )}
             </div>
           </div>
 
@@ -169,12 +189,18 @@ function ArticleForm({ article, onSubmit, onCancel }) {
               onChange={handleChange}
               placeholder="https://example.com/photo.jpg"
             />
+            {/* REVIEW: The onError handler sets display:none directly on the DOM element.
+                If the user then corrects the URL, the img element is re-rendered by React
+                but the inline style may persist since React doesn't clear manually-set DOM
+                styles. Use a state variable (e.g. imageError) to control visibility instead. */}
             {formData.imageUrl && (
               <img
                 src={formData.imageUrl}
                 alt="Preview"
                 className="image-preview"
-                onError={(e) => { e.target.style.display = "none"; }}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
               />
             )}
           </div>
@@ -186,14 +212,21 @@ function ArticleForm({ article, onSubmit, onCancel }) {
             <textarea
               id="content"
               name="content"
-              className={"form-input form-textarea" + (errors.content ? " input-error" : "")}
+              className={
+                "form-input form-textarea" +
+                (errors.content ? " input-error" : "")
+              }
               value={formData.content}
               onChange={handleChange}
               placeholder="Write your article content..."
               rows={6}
             />
-            {errors.content && <span className="error-text">{errors.content}</span>}
-            <span className="char-count">{formData.content.length} characters</span>
+            {errors.content && (
+              <span className="error-text">{errors.content}</span>
+            )}
+            <span className="char-count">
+              {formData.content.length} characters
+            </span>
           </div>
 
           <div className="form-group form-checkbox-group">

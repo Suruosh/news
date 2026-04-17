@@ -2,7 +2,22 @@ import ArticleCard from "../ArticleCard/ArticleCard";
 import EmptyState from "../EmptyState/EmptyState";
 import "./ArticleList.css";
 
-const CATEGORIES = ["All", "Travel", "Culture", "Art", "Technology", "History", "Opinion", "Politics", "Business", "Science", "Sports"];
+// REVIEW: Duplicated CATEGORIES list (also in ArticleForm.jsx and ArticleWizard.jsx).
+// Extract into a shared constants file. The "All" entry here is specific to filtering
+// and could be prepended at usage instead.
+const CATEGORIES = [
+  "All",
+  "Travel",
+  "Culture",
+  "Art",
+  "Technology",
+  "History",
+  "Opinion",
+  "Politics",
+  "Business",
+  "Science",
+  "Sports",
+];
 
 function ArticleList({
   articles,
@@ -41,7 +56,9 @@ function ArticleList({
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              className={"filter-chip" + (categoryFilter === cat ? " filter-active" : "")}
+              className={
+                "filter-chip" + (categoryFilter === cat ? " filter-active" : "")
+              }
               onClick={() => onCategoryChange(cat)}
             >
               {cat}

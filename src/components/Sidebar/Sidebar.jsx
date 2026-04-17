@@ -1,7 +1,21 @@
 import { useState } from "react";
 import "./Sidebar.css";
 
-function Sidebar({ onNewArticle, articleCount, currentView, onViewChange, mobileOpen, onMobileClose }) {
+// REVIEW: When `collapsed` is true, the JSX uses `{!collapsed && ...}` to hide labels,
+// badges, and brand text. On mobile, the CSS tries to override `.sidebar-collapsed` styles
+// to show these elements (e.g. `.sidebar-collapsed .nav-label { display: flex }`), but
+// since the elements are conditionally *not rendered* in JSX, the CSS overrides have no
+// effect. The sidebar will appear broken on mobile if the user collapsed it on desktop
+// before resizing. Either reset `collapsed` on mobile or always render the elements and
+// use CSS-only visibility toggling.
+function Sidebar({
+  onNewArticle,
+  articleCount,
+  currentView,
+  onViewChange,
+  mobileOpen,
+  onMobileClose,
+}) {
   const [collapsed, setCollapsed] = useState(false);
 
   function handleNavClick(view) {
@@ -20,8 +34,16 @@ function Sidebar({ onNewArticle, articleCount, currentView, onViewChange, mobile
 
   return (
     <>
-      {mobileOpen && <div className="sidebar-overlay" onClick={onMobileClose} />}
-      <aside className={"sidebar" + (collapsed ? " sidebar-collapsed" : "") + (mobileOpen ? " sidebar-mobile-open" : "")}>
+      {mobileOpen && (
+        <div className="sidebar-overlay" onClick={onMobileClose} />
+      )}
+      <aside
+        className={
+          "sidebar" +
+          (collapsed ? " sidebar-collapsed" : "") +
+          (mobileOpen ? " sidebar-mobile-open" : "")
+        }
+      >
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <div className="brand-icon">H</div>
@@ -50,14 +72,18 @@ function Sidebar({ onNewArticle, articleCount, currentView, onViewChange, mobile
 
         <nav className="sidebar-nav">
           <button
-            className={"nav-item" + (currentView === "dashboard" ? " nav-active" : "")}
+            className={
+              "nav-item" + (currentView === "dashboard" ? " nav-active" : "")
+            }
             onClick={() => handleNavClick("dashboard")}
           >
             <span className="nav-icon">⊞</span>
             {!collapsed && <span className="nav-label">Dashboard</span>}
           </button>
           <button
-            className={"nav-item" + (currentView === "articles" ? " nav-active" : "")}
+            className={
+              "nav-item" + (currentView === "articles" ? " nav-active" : "")
+            }
             onClick={() => handleNavClick("articles")}
           >
             <span className="nav-icon">☰</span>
@@ -72,7 +98,9 @@ function Sidebar({ onNewArticle, articleCount, currentView, onViewChange, mobile
 
         <div className="sidebar-footer">
           <button
-            className={"sidebar-new-btn" + (collapsed ? " sidebar-new-btn-icon" : "")}
+            className={
+              "sidebar-new-btn" + (collapsed ? " sidebar-new-btn-icon" : "")
+            }
             onClick={handleNewClick}
           >
             <span className="new-btn-icon">+</span>

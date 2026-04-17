@@ -2,6 +2,8 @@ import { Router } from "express";
 
 var router = Router();
 
+// REVIEW: GEMINI_API_KEY is not validated at startup. If it's undefined, the API call
+// will fail with a confusing error. Add an early check and throw a clear error message.
 var GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 router.post("/analyze", async function (req, res) {
@@ -17,6 +19,9 @@ router.post("/analyze", async function (req, res) {
       })
       .join("\n");
 
+    // REVIEW: The prompt starts with "Analyze the following news article URLs" then
+    // immediately repeats "Analyze the news articles from the URLs provided below".
+    // This redundancy wastes tokens and may confuse the model. Clean up the prompt.
     var prompt =
       "You are a professional news analyst. Analyze the following news article URLs " +
       "Analyze the news articles from the URLs provided below and synthesize them into a single, coherent, high-quality article. Focus on identifying narrative differences, framing, tone, and bias between Eastern and Western media sources.\n\n" +
@@ -39,6 +44,9 @@ router.post("/analyze", async function (req, res) {
       '  "sources": ["source name 1", "source name 2"]\n' +
       "}";
 
+    // REVIEW: Passing the API key as a URL query parameter is a security concern — it
+    // can appear in server logs, proxy logs, and monitoring tools. Use an HTTP header
+    // (e.g. `x-goog-api-key`) instead.
     var geminiUrl =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=" +
       GEMINI_API_KEY;
@@ -59,6 +67,9 @@ router.post("/analyze", async function (req, res) {
     }
 
     var data = await response.json();
+    // REVIEW: No null-safety on this chain. If the AI returns no candidates, or the
+    // response structure differs, this will throw a cryptic "Cannot read properties
+    // of undefined" error. Add defensive checks (e.g. data?.candidates?.[0]?.content...).
     var text = data.candidates[0].content.parts[0].text;
 
     var clean = text

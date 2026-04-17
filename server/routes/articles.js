@@ -28,10 +28,15 @@ router.get("/:id", async function (req, res) {
     if (error) throw error;
     res.json(data);
   } catch (err) {
+    // REVIEW: All errors are returned as 404, but a database connection failure
+    // should be a 500. Check the error type/code before choosing the status.
     res.status(404).json({ error: "Article not found" });
   }
 });
 
+// REVIEW: No server-side input validation on POST or PUT. Required fields (title,
+// category, content, author) are not checked before inserting into the database.
+// Client-side validation alone is insufficient — always validate on the server too.
 router.post("/", async function (req, res) {
   try {
     var { title, category, content, author, featured, image_url } = req.body;

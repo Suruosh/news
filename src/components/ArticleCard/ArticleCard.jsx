@@ -1,7 +1,11 @@
 import "./ArticleCard.css";
 
+// REVIEW: No default props. If `article.content` is
+// null/undefined, the `.length` check and `.substring()` call on line 13 will throw.
+// Add a guard or default to an empty string.
 function ArticleCard({ article, onEdit, onDelete }) {
-  const { title, category, content, author, date, featured, imageUrl } = article;
+  const { title, category, content, author, date, featured, imageUrl } =
+    article;
 
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",

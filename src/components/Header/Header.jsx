@@ -1,6 +1,8 @@
 import "./Header.css";
 
 function Header({ searchQuery, onSearchChange, currentView, onMenuToggle }) {
+  // REVIEW: This object is recreated on every render. Move it outside the component
+  // since it contains only static data.
   const viewLabels = {
     dashboard: "Dashboard",
     articles: "Articles",
@@ -9,12 +11,18 @@ function Header({ searchQuery, onSearchChange, currentView, onMenuToggle }) {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <button className="menu-toggle" onClick={onMenuToggle} title="Open menu">
+        <button
+          className="menu-toggle"
+          onClick={onMenuToggle}
+          title="Open menu"
+        >
           <span className="menu-bar"></span>
           <span className="menu-bar"></span>
           <span className="menu-bar"></span>
         </button>
-        <h2 className="topbar-title">{viewLabels[currentView] || "Articles"}</h2>
+        <h2 className="topbar-title">
+          {viewLabels[currentView] || "Articles"}
+        </h2>
       </div>
       <div className="topbar-right">
         {currentView === "articles" && (

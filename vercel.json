@@ -2,6 +2,7 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "_REVIEW": "Missing rewrite for /api/ai/analyze. The AI endpoint exists in api/ai/analyze.js but there is no rewrite rule for it here. Vercel file-based routing may handle it automatically, but the explicit rewrite pattern used for articles suggests this was overlooked. Also, /api/articles (no :id) has no explicit rewrite — verify it resolves to api/articles/index.js correctly.",
   "rewrites": [
     { "source": "/api/articles/:id", "destination": "/api/articles/[id]" },
     { "source": "/(.*)", "destination": "/index.html" }

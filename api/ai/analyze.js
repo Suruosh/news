@@ -1,3 +1,7 @@
+// REVIEW: Duplicated AI logic from server/routes/ai.js. The prompts in the two
+// copies have already diverged (this one says "mention slightly and lightly" while
+// the server version says "Focus on identifying narrative differences"). Keep one
+// source of truth for the prompt to avoid inconsistencies.
 var GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
@@ -54,6 +58,8 @@ export default async function handler(req, res) {
     }
 
     var data = await response.json();
+    // REVIEW: Same null-safety issue as server/routes/ai.js — no defensive checks
+    // on the AI response structure before accessing nested properties.
     var text = data.candidates[0].content.parts[0].text;
 
     var clean = text

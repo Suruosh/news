@@ -1,5 +1,8 @@
 import supabase from "../lib/supabase.js";
 
+// REVIEW: Same duplication issue — this mirrors server/routes/articles.js GET/:id,
+// PUT/:id, and DELETE/:id. Also, `id` is taken from `req.query` without sanitization
+// or type validation. A non-numeric id should return 400, not be passed to Supabase.
 export default async function handler(req, res) {
   var { id } = req.query;
 
@@ -38,10 +41,7 @@ export default async function handler(req, res) {
 
   if (req.method === "DELETE") {
     try {
-      var { error } = await supabase
-        .from("articles")
-        .delete()
-        .eq("id", id);
+      var { error } = await supabase.from("articles").delete().eq("id", id);
 
       if (error) throw error;
       return res.json({ success: true });
