@@ -1,3 +1,6 @@
+// REVIEW: Same `var` vs `const`/`let` inconsistency as articleService.js.
+// Use `const` here since API_BASE is never reassigned.
+// Modern JavaScript does not use var anymore.
 var API_BASE = "/api";
 
 export async function analyzeLinks(urls) {

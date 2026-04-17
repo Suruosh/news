@@ -13,7 +13,9 @@ function mapArticle(row) {
     category: row.category,
     content: row.content,
     author: row.author,
-    date: row.created_at ? row.created_at.split("T")[0] : new Date().toISOString().split("T")[0],
+    date: row.created_at
+      ? row.created_at.split("T")[0]
+      : new Date().toISOString().split("T")[0],
     featured: row.featured,
     imageUrl: row.image_url || "",
   };
@@ -24,6 +26,8 @@ function useArticles() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // REVIEW: No way to retry after a fetch failure. Consider exposing a `refetch`
+  // function so the UI can offer a "Try Again" button when an error occurs.
   useEffect(() => {
     async function loadArticles() {
       try {
@@ -40,6 +44,9 @@ function useArticles() {
     loadArticles();
   }, []);
 
+  // REVIEW: addArticle, updateArticle, and deleteArticle all reference `articles`
+  // from the closure, which can be stale if multiple operations happen in quick
+  // succession. Use the functional updater form: setArticles(prev => ...) instead.
   async function addArticle(articleData) {
     const saved = await createArticle(articleData);
     setArticles([mapArticle(saved), ...articles]);
@@ -49,8 +56,8 @@ function useArticles() {
     const saved = await updateArticleApi(id, articleData);
     setArticles(
       articles.map((article) =>
-        article.id === id ? mapArticle(saved) : article
-      )
+        article.id === id ? mapArticle(saved) : article,
+      ),
     );
   }
 
@@ -59,7 +66,14 @@ function useArticles() {
     setArticles(articles.filter((article) => article.id !== id));
   }
 
-  return { articles, isLoading, error, addArticle, updateArticle, deleteArticle };
+  return {
+    articles,
+    isLoading,
+    error,
+    addArticle,
+    updateArticle,
+    deleteArticle,
+  };
 }
 
 export default useArticles;

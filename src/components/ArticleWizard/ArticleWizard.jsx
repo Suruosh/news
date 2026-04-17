@@ -2,9 +2,19 @@ import { useState } from "react";
 import { analyzeLinks } from "../../services/aiService";
 import "./ArticleWizard.css";
 
+// REVIEW: Same duplicated CATEGORIES constant. Also uses `var` — be consistent with
+// the rest of the codebase and use `const`.
 var CATEGORIES = [
-  "Travel", "Culture", "Art", "Technology", "History",
-  "Opinion", "Politics", "Business", "Science", "Sports",
+  "Travel",
+  "Culture",
+  "Art",
+  "Technology",
+  "History",
+  "Opinion",
+  "Politics",
+  "Business",
+  "Science",
+  "Sports",
 ];
 
 function ArticleWizard({ onPublish, onCancel }) {
@@ -36,15 +46,23 @@ function ArticleWizard({ onPublish, onCancel }) {
 
   function removeLink(index) {
     if (links.length === 1) return;
-    setLinks(links.filter(function (_, i) { return i !== index; }));
+    setLinks(
+      links.filter(function (_, i) {
+        return i !== index;
+      }),
+    );
   }
 
   function hasValidLinks() {
-    return links.some(function (l) { return l.trim().length > 0; });
+    return links.some(function (l) {
+      return l.trim().length > 0;
+    });
   }
 
   async function handleAnalyze() {
-    var validLinks = links.filter(function (l) { return l.trim().length > 0; });
+    var validLinks = links.filter(function (l) {
+      return l.trim().length > 0;
+    });
     if (validLinks.length === 0) return;
 
     setIsAnalyzing(true);
@@ -69,19 +87,24 @@ function ArticleWizard({ onPublish, onCancel }) {
     }
   }
 
+  // REVIEW: Uses Object.assign instead of spread syntax ({ ...formData, [name]: value })
+  // which is used elsewhere in the project (ArticleForm.jsx). Be consistent.
   function handleChange(e) {
     var name = e.target.name;
-    var value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    var value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setFormData(Object.assign({}, formData, { [name]: value }));
   }
 
   function validate(data) {
     var newErrors = {};
     if (!data.title.trim()) newErrors.title = "Title is required";
-    else if (data.title.trim().length < 5) newErrors.title = "Title must be at least 5 characters";
+    else if (data.title.trim().length < 5)
+      newErrors.title = "Title must be at least 5 characters";
     if (!data.category) newErrors.category = "Please select a category";
     if (!data.content.trim()) newErrors.content = "Content is required";
-    else if (data.content.trim().length < 20) newErrors.content = "Content must be at least 20 characters";
+    else if (data.content.trim().length < 20)
+      newErrors.content = "Content must be at least 20 characters";
     if (!data.author.trim()) newErrors.author = "Author is required";
     return newErrors;
   }
@@ -108,28 +131,43 @@ function ArticleWizard({ onPublish, onCancel }) {
 
   return (
     <div className="form-overlay" onClick={onCancel}>
-      <div className="wizard-container" onClick={function (e) { e.stopPropagation(); }}>
-
+      <div
+        className="wizard-container"
+        onClick={function (e) {
+          e.stopPropagation();
+        }}
+      >
         <div className="form-header">
           <h2 className="form-title">
             {step === 1 ? "Step 1 — Add Links" : "Step 2 — Review & Publish"}
           </h2>
           <div className="wizard-steps">
-            <span className={"step-dot" + (step >= 1 ? " step-active" : "")}>1</span>
-            <span className={"step-line" + (step === 2 ? " step-line-done" : "")}></span>
-            <span className={"step-dot" + (step === 2 ? " step-active" : "")}>2</span>
+            <span className={"step-dot" + (step >= 1 ? " step-active" : "")}>
+              1
+            </span>
+            <span
+              className={"step-line" + (step === 2 ? " step-line-done" : "")}
+            ></span>
+            <span className={"step-dot" + (step === 2 ? " step-active" : "")}>
+              2
+            </span>
           </div>
-          <button className="form-close" onClick={onCancel}>✕</button>
+          <button className="form-close" onClick={onCancel}>
+            ✕
+          </button>
         </div>
 
         {step === 1 && (
           <div className="wizard-body">
             <p className="wizard-desc">
-              Paste one or more news article URLs below. Our AI will analyze them
-              and generate an article draft for you to review.
+              Paste one or more news article URLs below. Our AI will analyze
+              them and generate an article draft for you to review.
             </p>
 
             <div className="links-list">
+              {/* REVIEW: Using `key={index}` on a list where items can be removed
+                  causes React to mismatch component state when an item is removed from
+                  the middle. Generate stable unique IDs for each link entry instead. */}
               {links.map(function (link, index) {
                 return (
                   <div className="link-row" key={index}>
@@ -139,12 +177,16 @@ function ArticleWizard({ onPublish, onCancel }) {
                       className="form-input link-input"
                       placeholder="https://example.com/article..."
                       value={link}
-                      onChange={function (e) { handleLinkChange(index, e.target.value); }}
+                      onChange={function (e) {
+                        handleLinkChange(index, e.target.value);
+                      }}
                     />
                     {links.length > 1 && (
                       <button
                         className="btn-icon-sm link-remove"
-                        onClick={function () { removeLink(index); }}
+                        onClick={function () {
+                          removeLink(index);
+                        }}
                         title="Remove link"
                       >
                         ✕
@@ -166,7 +208,9 @@ function ArticleWizard({ onPublish, onCancel }) {
             )}
 
             <div className="form-actions">
-              <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
+              <button className="btn btn-ghost" onClick={onCancel}>
+                Cancel
+              </button>
               <button
                 className="btn btn-primary"
                 onClick={handleAnalyze}
@@ -187,7 +231,6 @@ function ArticleWizard({ onPublish, onCancel }) {
 
         {step === 2 && (
           <form className="wizard-body" onSubmit={handlePublish} noValidate>
-
             {analysis && analysis.keyPoints && (
               <div className="ai-summary">
                 <h4 className="ai-summary-title">✦ AI Key Points</h4>
@@ -216,7 +259,9 @@ function ArticleWizard({ onPublish, onCancel }) {
                 value={formData.title}
                 onChange={handleChange}
               />
-              {errors.title && <span className="error-text">{errors.title}</span>}
+              {errors.title && (
+                <span className="error-text">{errors.title}</span>
+              )}
             </div>
 
             <div className="form-row">
@@ -227,16 +272,25 @@ function ArticleWizard({ onPublish, onCancel }) {
                 <select
                   id="category"
                   name="category"
-                  className={"form-input form-select" + (errors.category ? " input-error" : "")}
+                  className={
+                    "form-input form-select" +
+                    (errors.category ? " input-error" : "")
+                  }
                   value={formData.category}
                   onChange={handleChange}
                 >
                   <option value="">Select category</option>
                   {CATEGORIES.map(function (cat) {
-                    return <option key={cat} value={cat}>{cat}</option>;
+                    return (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    );
                   })}
                 </select>
-                {errors.category && <span className="error-text">{errors.category}</span>}
+                {errors.category && (
+                  <span className="error-text">{errors.category}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -247,11 +301,15 @@ function ArticleWizard({ onPublish, onCancel }) {
                   type="text"
                   id="author"
                   name="author"
-                  className={"form-input" + (errors.author ? " input-error" : "")}
+                  className={
+                    "form-input" + (errors.author ? " input-error" : "")
+                  }
                   value={formData.author}
                   onChange={handleChange}
                 />
-                {errors.author && <span className="error-text">{errors.author}</span>}
+                {errors.author && (
+                  <span className="error-text">{errors.author}</span>
+                )}
               </div>
             </div>
 
@@ -273,7 +331,9 @@ function ArticleWizard({ onPublish, onCancel }) {
                   src={formData.imageUrl}
                   alt="Preview"
                   className="image-preview"
-                  onError={function (e) { e.target.style.display = "none"; }}
+                  onError={function (e) {
+                    e.target.style.display = "none";
+                  }}
                 />
               )}
             </div>
@@ -285,13 +345,20 @@ function ArticleWizard({ onPublish, onCancel }) {
               <textarea
                 id="content"
                 name="content"
-                className={"form-input form-textarea" + (errors.content ? " input-error" : "")}
+                className={
+                  "form-input form-textarea" +
+                  (errors.content ? " input-error" : "")
+                }
                 value={formData.content}
                 onChange={handleChange}
                 rows={8}
               />
-              {errors.content && <span className="error-text">{errors.content}</span>}
-              <span className="char-count">{formData.content.length} characters</span>
+              {errors.content && (
+                <span className="error-text">{errors.content}</span>
+              )}
+              <span className="char-count">
+                {formData.content.length} characters
+              </span>
             </div>
 
             <div className="form-group form-checkbox-group">
@@ -307,7 +374,11 @@ function ArticleWizard({ onPublish, onCancel }) {
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-ghost" onClick={handleBack}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={handleBack}
+              >
                 ← Back
               </button>
               <button type="submit" className="btn btn-primary">

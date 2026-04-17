@@ -10,9 +10,24 @@ import Notification from "./components/Notification/Notification";
 import ConfirmDialog from "./components/ConfirmDialog/ConfirmDialog";
 import "./App.css";
 
+// REVIEW: This component manages too much state (8 useState calls) and too many handler
+// functions. Consider extracting filter state, modal/dialog state, and CRUD handlers into
+// a useReducer or custom hooks to improve readability and maintainability.
+// REVIEW: Multiple files across the project (services, ArticleWizard, server code) use
+// `var` declarations, which is deprecated in modern JavaScript. The rest of the codebase
+// correctly uses `const`/`let`. Use `const` for values that are never reassigned and `let`
+// where reassignment is needed — `var` should not appear in a modern React project.
 function App() {
-  const { articles, isLoading, error, addArticle, updateArticle, deleteArticle } = useArticles();
-  const { notification, showNotification, dismissNotification } = useNotification();
+  const {
+    articles,
+    isLoading,
+    error,
+    addArticle,
+    updateArticle,
+    deleteArticle,
+  } = useArticles();
+  const { notification, showNotification, dismissNotification } =
+    useNotification();
 
   const [currentView, setCurrentView] = useState("articles");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -70,7 +85,12 @@ function App() {
     if (deletingArticle) {
       try {
         await deleteArticle(deletingArticle.id);
-        showNotification('"' + deletingArticle.title + '" has been deleted', "error");
+        // REVIEW: Using "error" type for a successful deletion is misleading.
+        // Consider adding a "warning" or "info" type, or use "success" here.
+        showNotification(
+          '"' + deletingArticle.title + '" has been deleted',
+          "error",
+        );
       } catch (err) {
         showNotification(err.message, "error");
       }
@@ -82,8 +102,16 @@ function App() {
     setDeletingArticle(null);
   }
 
-  const featuredCount = articles.filter(function (a) { return a.featured; }).length;
-  const categorySet = new Set(articles.map(function (a) { return a.category; }));
+  // REVIEW: These derived values are recomputed on every render. Use useMemo
+  // to avoid unnecessary recalculations, especially as the articles list grows.
+  const featuredCount = articles.filter(function (a) {
+    return a.featured;
+  }).length;
+  const categorySet = new Set(
+    articles.map(function (a) {
+      return a.category;
+    }),
+  );
 
   function renderDashboard() {
     return (
@@ -173,9 +201,7 @@ function App() {
           onMenuToggle={() => setMobileMenuOpen(true)}
         />
 
-        <main className="main-content">
-          {renderContent()}
-        </main>
+        <main className="main-content">{renderContent()}</main>
       </div>
 
       {showWizard && (
@@ -196,7 +222,11 @@ function App() {
       {deletingArticle && (
         <ConfirmDialog
           title="Delete Article"
-          message={'Are you sure you want to delete "' + deletingArticle.title + '"? This action cannot be undone.'}
+          message={
+            'Are you sure you want to delete "' +
+            deletingArticle.title +
+            '"? This action cannot be undone.'
+          }
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
         />
